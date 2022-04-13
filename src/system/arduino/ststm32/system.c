@@ -15,9 +15,32 @@
 #include "zenoh-pico/system/platform.h"
 #include <hw/driver/delay.h>
 
+// This wrapper is only used for ESP32.
+// In FreeRTOS, tasks created using xTaskCreate must end with vTaskDelete.
+// A task function should __not__ simply return.
+typedef struct
+{
+    void *(*fun)(void *);
+    void *arg;
+} _zn_task_arg;
+
+void z_task_wrapper(void *arg)
+{
+    _zn_task_arg *zn_arg = (_zn_task_arg*)arg;
+    zn_arg->fun(zn_arg->arg);
+    vTaskDelete(NULL);
+    free(zn_arg);
+}
+
+
 /*------------------ Task ------------------*/
 int z_task_init(z_task_t *task, z_task_attr_t *attr, void *(*fun)(void *), void *arg)
 {
+    // _zn_task_arg *zn_arg = (_zn_task_arg *)malloc(sizeof(_zn_task_arg));
+    // zn_arg->fun = fun;
+    // zn_arg->arg = arg;
+    // if (xTaskCreate(z_task_wrapper, "", 1280, zn_arg, 0, task) != pdPASS)
+    //     return -1;
     return 0;
 }
 
@@ -41,27 +64,44 @@ void z_task_free(z_task_t **task)
 /*------------------ Mutex ------------------*/
 int z_mutex_init(z_mutex_t *m)
 {
+    // SemaphoreHandle_t handle = NULL;
+    // handle = xSemaphoreCreateMutex();
+    // if (handle == NULL)
+    //     return -1;
     return 0;
 }
 
 int z_mutex_free(z_mutex_t *m)
 {
+    // vSemaphoreDelete(*m);
     return 0;
 }
 
 int z_mutex_lock(z_mutex_t *m)
 {
+    // while ( xSemaphoreTake( *m, ( TickType_t ) configTICK_RATE_HZ ) != pdTRUE );
     return 0;
 }
 
 int z_mutex_trylock(z_mutex_t *m)
 {
+    // if( xSemaphoreTake( *m, ( TickType_t ) configTICK_RATE_HZ ) != pdTRUE )
+    // {
+    //     return 0;
+    // }
+    // return -1;
     return 0;
 }
 
 int z_mutex_unlock(z_mutex_t *m)
 {
+    // if( xSemaphoreGive( *m ) != pdTRUE )
+    // {
+    //     return -1;
+    // }
+    //return -1;
     return 0;
+
 }
 
 /*------------------ Condvar ------------------*/
@@ -88,17 +128,17 @@ int z_condvar_wait(z_condvar_t *cv, z_mutex_t *m)
 /*------------------ Sleep ------------------*/
 int z_sleep_us(unsigned int time)
 {
-    return usleep(time);
+    return -1;
 }
 
 int z_sleep_ms(unsigned int time)
 {
-    return usleep(1000 * time);
+    return osDelay(time);
 }
 
 int z_sleep_s(unsigned int time)
 {
-    return sleep(time);
+    return osDelay(1000 * time);
 }
 
 /*------------------ Instant ------------------*/
