@@ -41,5 +41,8 @@ _z_link_t *_z_new_link_bt(_z_endpoint_t endpoint);
 #if Z_LINK_SERIAL == 1
 _z_link_t *_z_new_link_serial(_z_endpoint_t endpoint);
 #endif
+#if Z_LINK_WS == 1
+_z_link_t *_z_new_link_ws(_z_endpoint_t endpoint);
+#endif
 
 #endif /* ZENOH_PICO_LINK_MANAGER_H */

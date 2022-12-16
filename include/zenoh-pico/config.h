@@ -196,6 +196,14 @@
 #define Z_LINK_SERIAL 0
 #endif
 
+
+/**
+ * Enable WebSocket links.
+ */
+#ifndef Z_LINK_WS
+#define Z_LINK_WS 0
+#endif
+
 /**
  * Enable UDP Scouting.
  */
@@ -257,7 +265,7 @@
  * Enable Unicast Transport.
  */
 #ifndef Z_UNICAST_TRANSPORT
-#if Z_LINK_TCP == 0 && Z_LINK_UDP_UNICAST == 0
+#if Z_LINK_TCP == 0 && Z_LINK_UDP_UNICAST == 0 && Z_LINK_WS == 0
 #define Z_UNICAST_TRANSPORT 0
 #else
 #define Z_UNICAST_TRANSPORT 1

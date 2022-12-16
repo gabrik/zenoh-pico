@@ -30,6 +30,9 @@
 #if Z_LINK_SERIAL == 1
 #include "zenoh-pico/link/config/serial.h"
 #endif
+#if Z_LINK_WS == 1
+#include "zenoh-pico/link/config/ws.h"
+#endif
 /*------------------ Locator ------------------*/
 void _z_locator_init(_z_locator_t *locator) {
     locator->_protocol = NULL;
@@ -280,6 +283,11 @@ _z_str_intmap_result_t _z_endpoint_config_from_str(const char *s, const char *pr
         res = _z_serial_config_from_str(p_start);
     else
 #endif
+#if Z_LINK_WS == 1
+        if (_z_str_eq(proto, WS_SCHEMA))
+        res = _z_ws_config_from_str(p_start);
+    else
+#endif
         goto ERR;
 
     return res;
@@ -314,6 +322,11 @@ size_t _z_endpoint_config_strlen(const _z_str_intmap_t *s, const char *proto) {
         len = _z_serial_config_strlen(s);
     else
 #endif
+#if Z_LINK_WS == 1
+        if (_z_str_eq(proto, WS_SCHEMA))
+        len = _z_ws_config_strlen(s);
+    else
+#endif
         goto ERR;
 
     return len;
@@ -345,6 +358,11 @@ char *_z_endpoint_config_to_str(const _z_str_intmap_t *s, const char *proto) {
 #if Z_LINK_SERIAL == 1
         if (_z_str_eq(proto, SERIAL_SCHEMA))
         res = _z_serial_config_to_str(s);
+    else
+#endif
+#if Z_LINK_WS == 1
+        if (_z_str_eq(proto, WS_SCHEMA))
+        res = _z_ws_config_to_str(s);
     else
 #endif
         goto ERR;
