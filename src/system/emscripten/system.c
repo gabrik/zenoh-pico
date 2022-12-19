@@ -60,7 +60,7 @@ void z_free(void *ptr) {
 
 /*------------------ Task ------------------*/
 int _z_task_init(_z_task_t *task, _z_task_attr_t *attr, void *(*fun)(void *), void *arg) {
-    return pthread_create(task, attr, fun, arg);;
+    return pthread_create(task, attr, fun, arg);
 }
 
 int _z_task_join(_z_task_t *task) { return pthread_join(*task, NULL); }
