@@ -74,6 +74,8 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Windows")
   message(FATAL_ERROR "zenoh-pico is not yet available on Windows platform")
   add_definitions(-DZENOH_WIN)
   return()
+elseif(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+  add_definitions(-DZENOH_WASM)
 else()
   message(FATAL_ERROR "zenoh-pico is not yet available on ${CMAKE_SYSTEM_NAME} platform")
   return()
@@ -92,7 +94,8 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
-  add_compile_options(-c -Wall -Wextra -Werror -Wunused -Wstrict-prototypes -pipe -g -O0)
+  # add_compile_options(-c -Wall -Wextra -Werror -Wunused -Wstrict-prototypes -pipe -g -O0)
+  add_compile_options(-c -Wall -Wextra -Wunused -Wstrict-prototypes -pipe -g -O0)
 elseif(CMAKE_BUILD_TYPE MATCHES "RELEASE")
   add_compile_options(-pipe -O3)
 endif()
@@ -116,8 +119,8 @@ include_directories(
   ${PROJECT_SOURCE_DIR}/include
 )
 
-if(UNIX)
-  file(GLOB Sources "src/*.c"
+
+file(GLOB Sources "src/*.c"
     "src/api/*.c"
     "src/net/*.c"
     "src/collections/*.c"
@@ -129,7 +132,6 @@ if(UNIX)
     "src/protocol/keyexpr/*.c"
     "src/session/*.c"
     "src/system/*.c"
-    "src/system/unix/*.c"
     "src/transport/*.c"
     "src/transport/common/*.c"
     "src/transport/unicast/*.c"
@@ -140,6 +142,15 @@ if(UNIX)
     "src/transport/multicast/link/task/*.c"
     "src/utils/*.c"
   )
+
+if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  file (GLOB Sources_Unix "src/system/unix/*.c")
+  list(APPEND Sources ${Sources_Unix})
+endif()
+
+if(CMAKE_SYSTEM_NAME MATCHES "Emscripten")
+  file (GLOB Sources_Emscripten "src/system/emscripten/*.c")
+  list(APPEND Sources ${Sources_Emscripten})
 endif()
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
